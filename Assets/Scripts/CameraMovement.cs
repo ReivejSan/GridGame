@@ -4,52 +4,41 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField]
-    Transform target = null;
+	[SerializeField]
+	Transform target = null;
+	[SerializeField]
+	float speed = 1.0f;
+	[SerializeField]
+	float innerBuffer = 0.1f;
+	[SerializeField]
+	float outerBuffer = 1.5f;
+	bool moving;
+	Vector3 offset;
 
-    [SerializeField]
-    float speed = 1f;
+	void Start()
+	{
+		offset = target.position + transform.position;
+	}
 
-    [SerializeField]
-    float innerBuffer = .1f;
+	void Update()
+	{
+		Vector3 cameraTargetPosition = target.position + offset;
+		Vector3 heading = cameraTargetPosition - transform.position;
+		float distance = heading.magnitude;
+		Vector3 direction = heading / distance;
 
-    [SerializeField]
-    float outerBuffer = 1.5f;
+		if (distance > outerBuffer)
+			moving = true;
 
-    Vector3 offset;
-
-    bool moving;
-
-    private void Start()
-    {
-        offset = target.position + transform.position;
-    }
-
-    private void Update()
-    {
-        Vector3 cameraTargetPosition = target.position + offset;
-        Vector3 heading = cameraTargetPosition - transform.position;
-
-        float distance = heading.magnitude;
-
-        Vector3 direction = heading / distance;
-
-        if (distance > outerBuffer)
-        {
-            moving = true;
-        }
-
-        if(moving)
-        {
-            if(distance > innerBuffer)
-            {
-                transform.position += direction * Time.deltaTime * speed * Mathf.Max(distance, 1f);
-            }
-            else
-            {
-                transform.position = cameraTargetPosition;
-                moving = false;
-            }
-        }
-    }
+		if (moving)
+		{
+			if (distance > innerBuffer)
+				transform.position += direction * Time.deltaTime * speed * Mathf.Max(distance, 1f);
+			else
+			{
+				transform.position = cameraTargetPosition;
+				moving = false;
+			}
+		}
+	}
 }
